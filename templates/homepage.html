@@ -1,0 +1,78 @@
+    {% extends 'rootpage.html' %}
+    {%load static%}
+
+
+    {% block content %}
+
+    <head>
+        <!-- <link rel="stylesheet" type="text/css" href="{% static 'css/home.css' %}" /> -->
+    </head>
+
+
+    <body>
+
+        <!-- for images -->
+
+        <div class="col-lg-12 producthome" style="background-color: white;">
+            <!-- New arrivals section-->
+
+            <div class="row prodimages">
+                {% for category in object %}
+                <h4>{{category.name}}</h4>
+                {%for product in category.product_set.all %}
+                
+                <div class="col-lg-3 py-4" >
+                    <div class="card " style="width: 18rem;">
+
+                        <a href="{% url 'product' product.id %}"><img class="card-img-top"  src="{{product.imageurl}}"
+                                alt="Card image cap">
+                        </a>
+                    
+                        <div class="card-body" >
+
+                            <h5 class="card-title">{{product.title}}</h5>
+                            
+                            <p class="card-text">Rs. {{product.price}}</p>
+                            <button data-product={{product.id}} data-action="add"
+                                class="btn btn-primary update-cart-data">Add to cart</button>      
+                        </div>
+                    </div>
+                </div>
+                <script>
+                    document.addEventListener("DOMContentLoaded", () => {
+                        const addToCartButtons = document.querySelectorAll('.update-cart-data');
+                        
+                        addToCartButtons.forEach(button => {
+                            button.addEventListener('click', () => {
+                                const productId = button.dataset.product;
+                                const action = button.dataset.action;
+                
+                                if (action === 'add') {
+                                    // Check if the user is authenticated
+                                    const isUserAuthenticated = "{{ request.user.is_authenticated|lower }}";
+                                    if (isUserAuthenticated !== 'true') {
+                                        if (!button.classList.contains('disabled')) {
+                                            alert("Please login first to add items to your cart.");
+                                            button.classList.add('disabled');
+                                        }
+                                        // You can also redirect the user to the login page here
+                                        // window.location.href = "{% url 'login' %}";
+                                        return;
+                                    }
+                
+                                    // Proceed with adding the item to the cart
+                                    // ...
+                                }
+                            });
+                        });
+                    });
+                </script>
+                {% endfor %}
+
+                {% endfor %}
+            </div>
+
+        </div>
+        {% endblock %}
+
+    </body>
